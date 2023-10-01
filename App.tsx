@@ -8,6 +8,7 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Easing,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -24,15 +25,35 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Animated, {
+  FadeInLeft,
+  SlideOutRight,
+  Layout,
+  Keyframe,
+} from 'react-native-reanimated';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
+const opacity = new Keyframe({
+  from: {
+    opacity: 0,
+  },
+  69: {
+    opacity: 0.5,
+  },
+  to: {
+    opacity: 1,
+  },
+});
+
 function Section({children, title}: SectionProps): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
-    <View style={styles.sectionContainer}>
+    <Animated.View
+      style={styles.sectionContainer}
+      entering={opacity.duration(500)}>
       <Text
         style={[
           styles.sectionTitle,
@@ -51,7 +72,7 @@ function Section({children, title}: SectionProps): JSX.Element {
         ]}>
         {children}
       </Text>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -72,7 +93,10 @@ function App(): JSX.Element {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <Header />
-        <View
+        <Animated.View
+          entering={FadeInLeft.duration(500)}
+          exiting={SlideOutRight.easing(Easing.linear)}
+          layout={Layout.springify()}
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
@@ -90,7 +114,7 @@ function App(): JSX.Element {
             Read the docs to discover what to do next:
           </Section>
           <LearnMoreLinks />
-        </View>
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
